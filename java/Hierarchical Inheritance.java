@@ -28,11 +28,11 @@ A obj1 = new A();
 B obj2 = new B(); 
 C obj3 = new C(); 
 o=obj1; 
-o.OverrideMethod(); //calling super class method 
+o.OverrideMethod(); 
 9 
 o=obj2; 
-o.OverrideMethod(); //calling A method from subclass object 
+o.OverrideMethod();
 o=obj3; 
-o.OverrideMethod(); //calling A method from subclass object 
+o.OverrideMethod(); 
 } 
 } 
