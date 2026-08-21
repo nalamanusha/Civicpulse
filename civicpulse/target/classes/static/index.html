@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse Nexus - Smart Government Redressal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body id="mainBody" class="bg-slate-100 text-slate-800 min-h-screen font-sans selection:bg-blue-600 selection:text-white transition duration-300">
+
+<!-- Toast Notification Container -->
+<div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-white/10 text-xs font-medium">
+    <span id="toastIcon">🔔</span>
+    <span id="toastText">Notification alert...</span>
+</div>
+
+<!-- PAGE 1: LOGIN / REGISTER -->
+<div id="page-auth" class="w-full min-h-screen flex justify-center items-center p-6 relative bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2000&q=80');">
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+
+    <div class="w-full max-w-md bg-white/20 backdrop-blur-2xl border border-white/30 shadow-2xl rounded-3xl p-8 text-white relative z-10">
+        <div class="text-center mb-6">
+            <div class="inline-block p-3.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg mb-3">
+                <span class="text-2xl">🏛️</span>
+            </div>
+            <h1 class="text-2xl font-black tracking-tight text-white">CivicPulse Nexus</h1>
+            <p class="text-xs text-slate-200 mt-1 font-medium">Smart Government Redressal Portal</p>
+        </div>
+
+        <div class="flex bg-black/25 p-1 rounded-xl mb-6 border border-white/10">
+            <button onclick="switchAuthMode('login')" id="auth-tab-login" class="flex-1 py-2.5 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-md transition">Login</button>
+            <button onclick="switchAuthMode('register')" id="auth-tab-register" class="flex-1 py-2.5 rounded-lg font-bold text-xs text-slate-300 hover:text-white transition">Register</button>
+        </div>
+
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Email / Username</label>
+                <input type="text" id="loginEmail" placeholder="Enter email" required class="w-full bg-white/10 border border-white/20 text-white placeholder-slate-300 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition" />
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" required class="w-full bg-white/10 border border-white/20 text-white placeholder-slate-300 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition" />
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Select Role</label>
+                <select id="loginRole" class="w-full bg-slate-900 border border-white/20 text-white p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition">
+                    <option value="CITIZEN">👤 Citizen Portal User</option>
+                    <option value="ADMIN">🛡️ Administrator</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-xl shadow-blue-600/30 transition">Login to Portal</button>
+        </form>
+
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Full Name</label>
+                <input type="text" id="regName" placeholder="Enter full name" required class="w-full bg-white/10 border border-white/20 text-white placeholder-slate-300 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition" />
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Email Address</label>
+                <input type="email" id="regEmail" placeholder="Enter email" required class="w-full bg-white/10 border border-white/20 text-white placeholder-slate-300 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition" />
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-200 mb-1">Password</label>
+                <input type="password" id="regPassword" placeholder="Create password" required class="w-full bg-white/10 border border-white/20 text-white placeholder-slate-300 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition" />
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-xl shadow-emerald-600/30 transition">Register Account</button>
+        </form>
+    </div>
+</div>
+
+<!-- PAGE 2: ORGANIZED DASHBOARD WITH SIDEBAR -->
+<div id="page-portal" class="hidden min-h-screen flex flex-col md:flex-row">
+
+    <!-- SIDEBAR NAVIGATION MENU -->
+    <aside id="sidebarMenu" class="w-full md:w-64 bg-white border-r border-slate-200 p-6 flex flex-col justify-between shadow-sm transition">
+        <div>
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2.5 bg-blue-600 text-white rounded-xl shadow-md">
+                    <span class="text-lg">🏛️</span>
+                </div>
+                <div>
+                    <h2 class="font-black text-sm tracking-tight text-slate-900">CivicPulse</h2>
+                    <span id="roleBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">Citizen Mode</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Navigation Links -->
+            <nav id="navLinksContainer" class="space-y-1.5">
+                <!-- Populated via JS based on role -->
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer Controls -->
+        <div class="pt-6 border-t border-slate-200 space-y-2">
+            <button onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                <span>🌓</span> Toggle Theme
+            </button>
+            <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition border border-red-100">
+                <span>🔒</span> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+
+        <!-- Top Header Stats Bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="card-bg bg-white p-5 rounded-2xl border border-slate-200 shadow-sm transition">
+                <p class="text-xs font-bold uppercase text-slate-400">Total System Reports</p>
+                <h3 id="stat-total" class="text-2xl font-black mt-1 text-slate-900">0</h3>
+            </div>
+            <div class="card-bg bg-white p-5 rounded-2xl border border-slate-200 shadow-sm transition">
+                <p class="text-xs font-bold uppercase text-slate-400">In Progress / Pending</p>
+                <h3 id="stat-progress" class="text-2xl font-black mt-1 text-amber-600">0</h3>
+            </div>
+            <div class="card-bg bg-white p-5 rounded-2xl border border-slate-200 shadow-sm transition">
+                <p class="text-xs font-bold uppercase text-slate-400">Resolved / Closed</p>
+                <h3 id="stat-resolved" class="text-2xl font-black mt-1 text-emerald-600">0</h3>
+            </div>
+        </div>
+
+        <!-- SECTION 1: FILE GRIEVANCE -->
+        <div id="section-file" class="dashboard-section">
+            <div class="max-w-2xl bg-white card-bg border border-slate-200 p-8 rounded-3xl shadow-sm transition">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">📝 File a New Grievance</h2>
+                    <span id="aiBadge" class="text-[10px] bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-full hidden">✨ AI Auto-Classified</span>
+                </div>
+                <form id="grievanceForm" onsubmit="submitGrievance(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Your Name</label>
+                        <input type="text" id="userName" placeholder="Enter your name" required class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Contact Number / Email</label>
+                        <input type="text" id="userContact" placeholder="Enter phone or email" required class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description (Type issue for AI detection)</label>
+                        <textarea id="description" rows="3" oninput="runAIClassifier(this.value)" placeholder="Describe the issue..." required class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Category</label>
+                            <select id="category" class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+                                <option value="WATER_SUPPLY">Water Supply</option>
+                                <option value="ELECTRICITY">Electricity</option>
+                                <option value="ROADS">Roads</option>
+                                <option value="SANITATION">Sanitation</option>
+                                <option value="HEALTH">Health</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority Level</label>
+                            <select id="priority" class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+                                <option value="LOW">🟢 Low</option>
+                                <option value="MEDIUM" selected>🟡 Medium</option>
+                                <option value="HIGH">🟠 High</option>
+                                <option value="EMERGENCY">🔴 Emergency</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold uppercase text-slate-500">Location / Ward</label>
+                            <button type="button" onclick="detectGPS()" class="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">📍 Detect GPS</button>
+                        </div>
+                        <input type="text" id="location" placeholder="e.g., Main Street or click Detect GPS" required class="input-bg w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Photo Proof Attachment</label>
+                        <input type="file" id="photoFile" accept="image/*" class="input-bg w-full bg-slate-50 border border-slate-200 text-slate-600 p-2 rounded-xl text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition" />
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition">Submit Report</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 2: LIVE FEED -->
+        <div id="section-feed" class="dashboard-section hidden">
+            <div class="bg-white card-bg border border-slate-200 p-8 rounded-3xl shadow-sm transition">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">⚡ Live Feed & Community Reports</h2>
+                    <button onclick="fetchGrievances()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold transition">🔄 Refresh Feed</button>
+                </div>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="searchInput" oninput="filterFeed()" placeholder="🔍 Search location or keyword..." class="input-bg bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs flex-1 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                    <select id="filterCategory" onchange="filterFeed()" class="input-bg bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-semibold">
+                        <option value="ALL">All Categories</option>
+                        <option value="WATER_SUPPLY">Water Supply</option>
+                        <option value="ELECTRICITY">Electricity</option>
+                        <option value="ROADS">Roads</option>
+                        <option value="SANITATION">Sanitation</option>
+                    </select>
+                </div>
+                <div id="grievancesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-sm text-slate-500">Loading grievances...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: TRACK STATUS -->
+        <div id="section-track" class="dashboard-section hidden">
+            <div class="max-w-xl bg-white card-bg border border-slate-200 p-8 rounded-3xl shadow-sm transition">
+                <h2 class="font-black text-lg text-slate-900 mb-2">Track Complaint Status</h2>
+                <p class="text-xs text-slate-500 mb-6">Enter your unique Tracking ID to see live progress.</p>
+                <div class="flex gap-2.5 mb-6">
+                    <input type="text" id="trackIdInput" placeholder="Paste Tracking ID (UUID)..." class="input-bg bg-slate-50 border border-slate-200 p-3 rounded-xl text-sm flex-1 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                    <button onclick="trackComplaint()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-xl font-semibold text-sm transition shadow-md">Track</button>
+                </div>
+                <div id="trackResult" class="hidden border border-slate-200 p-4 rounded-xl bg-slate-50 space-y-3 text-slate-700 text-xs"></div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: MY REPORTS HISTORY -->
+        <div id="section-reports" class="dashboard-section hidden">
+            <div class="max-w-3xl bg-white card-bg border border-slate-200 p-8 rounded-3xl shadow-sm transition">
+                <h2 class="font-black text-lg text-slate-900 mb-2">My Submitted Reports</h2>
+                <p class="text-xs text-slate-500 mb-6">History of complaints filed from this browser session.</p>
+                <div id="myReportsList" class="space-y-3">
+                    <p class="text-sm text-slate-500">No reports filed in this session yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: ADMIN PANEL -->
+        <div id="section-admin" class="dashboard-section hidden">
+            <div class="bg-white card-bg border border-slate-200 p-8 rounded-3xl shadow-sm transition">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <h2 class="font-black text-lg text-slate-900">🛡️ Administrator Management Dashboard</h2>
+                    <div class="flex gap-2">
+                        <button onclick="exportToCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-semibold transition shadow-sm">📥 Export CSV</button>
+                        <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold transition shadow-sm">🖨️ Print Report</button>
+                        <button onclick="fetchGrievances()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold transition">🔄 Refresh</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                        <tr class="border-b border-slate-200 text-slate-500 bg-slate-50/50">
+                            <th class="p-3">Tracking ID</th>
+                            <th class="p-3">User Name</th>
+                            <th class="p-3">Category</th>
+                            <th class="p-3">Priority</th>
+                            <th class="p-3">Location</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="text-slate-700">
+                        <tr><td colspan="7" class="p-4 text-center text-slate-500">Loading admin data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- JavaScript Logic -->
+<script>
+    const API_URL = '/api/grievances';
+    let allGrievancesData = [];
+    let mySessionReports = JSON.parse(localStorage.getItem('myGrievances') || '[]');
+    let currentRole = 'CITIZEN';
+    let isDarkMode = false;
+
+    function showToast(message, icon = '🔔') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastIcon').innerText = icon;
+        document.getElementById('toastText').innerText = message;
+        toast.classList.remove('translate-x-full');
+        setTimeout(() => { toast.classList.add('translate-x-full'); }, 3500);
+    }
+
+    function runAIClassifier(text) {
+        const lower = text.toLowerCase();
+        const catSelect = document.getElementById('category');
+        const prioSelect = document.getElementById('priority');
+        const aiBadge = document.getElementById('aiBadge');
+
+        let detectedCat = null;
+        let detectedPrio = "MEDIUM";
+
+        if (lower.includes('water') || lower.includes('leak') || lower.includes('pipe') || lower.includes('drain')) detectedCat = 'WATER_SUPPLY';
+        else if (lower.includes('power') || lower.includes('current') || lower.includes('light') || lower.includes('electric')) detectedCat = 'ELECTRICITY';
+        else if (lower.includes('road') || lower.includes('pothole') || lower.includes('street')) detectedCat = 'ROADS';
+        else if (lower.includes('garbage') || lower.includes('trash') || lower.includes('waste')) detectedCat = 'SANITATION';
+        else if (lower.includes('health') || lower.includes('hospital') || lower.includes('mosquito')) detectedCat = 'HEALTH';
+
+        if (lower.includes('emergency') || lower.includes('urgent') || lower.includes('severe') || lower.includes('danger')) detectedPrio = 'EMERGENCY';
+        else if (lower.includes('high') || lower.includes('major')) detectedPrio = 'HIGH';
+
+        if(detectedCat) {
+            catSelect.value = detectedCat;
+            prioSelect.value = detectedPrio;
+            aiBadge.classList.remove('hidden');
+        } else {
+            aiBadge.classList.add('hidden');
+        }
+    }
+
+    function switchAuthMode(mode) {
+        if(mode === 'login') {
+            document.getElementById('form-login').classList.remove('hidden');
+            document.getElementById('form-register').classList.add('hidden');
+            document.getElementById('auth-tab-login').className = "flex-1 py-2.5 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-md transition";
+            document.getElementById('auth-tab-register').className = "flex-1 py-2.5 rounded-lg font-bold text-xs text-slate-300 hover:text-white transition";
+        } else {
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-register').classList.remove('hidden');
+            document.getElementById('auth-tab-login').className = "flex-1 py-2.5 rounded-lg font-bold text-xs text-slate-300 hover:text-white transition";
+            document.getElementById('auth-tab-register').className = "flex-1 py-2.5 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-md transition";
+        }
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        currentRole = document.getElementById('loginRole').value;
+
+        document.getElementById('page-auth').classList.add('hidden');
+        document.getElementById('page-portal').classList.remove('hidden');
+
+        setupSidebarMenu();
+        fetchGrievances();
+        showToast(`Welcome! Logged in as ${currentRole}`, "👋");
+    }
+
+    function handleRegister(e) {
+        e.preventDefault();
+        alert('Registration successful! Please login.');
+        switchAuthMode('login');
+    }
+
+    function handleLogout() {
+        document.getElementById('page-portal').classList.add('hidden');
+        document.getElementById('page-auth').classList.remove('hidden');
+        showToast("Successfully logged out.", "🔒");
+    }
+
+    function setupSidebarMenu() {
+        const container = document.getElementById('navLinksContainer');
+        const badgeText = document.getElementById('roleBadge');
+
+        if(currentRole === 'ADMIN') {
+            badgeText.innerText = "Admin Panel 🛡️";
+            badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700";
+            container.innerHTML = `
+                    <button onclick="switchSection('admin')" id="menu-admin" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm transition"><span>🛡️</span> Manage Grievances</button>
+                `;
+            switchSection('admin');
+        } else {
+            badgeText.innerText = "Citizen Mode 👤";
+            badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700";
+            container.innerHTML = `
+                    <button onclick="switchSection('file')" id="menu-file" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm transition"><span>📝</span> File Grievance</button>
+                    <button onclick="switchSection('feed')" id="menu-feed" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"><span>⚡</span> Live Feed</button>
+                    <button onclick="switchSection('reports')" id="menu-reports" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"><span>📁</span> My Reports</button>
+                    <button onclick="switchSection('track')" id="menu-track" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"><span>🔍</span> Track Status</button>
+                `;
+            switchSection('file');
+        }
+    }
+
+    function switchSection(sectionId) {
+        const sections = ['file', 'feed', 'track', 'reports', 'admin'];
+        sections.forEach(s => {
+            const el = document.getElementById(`section-${s}`);
+            if(el) el.classList.add('hidden');
+            const btn = document.getElementById(`menu-${s}`);
+            if(btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition";
+        });
+
+        const activeSec = document.getElementById(`section-${sectionId}`);
+        if(activeSec) activeSec.classList.remove('hidden');
+        const activeBtn = document.getElementById(`menu-${sectionId}`);
+        if(activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm transition";
+
+        if(sectionId === 'feed' || sectionId === 'admin') fetchGrievances();
+        if(sectionId === 'reports') renderMyReports();
+    }
+
+    function toggleTheme() {
+        isDarkMode = !isDarkMode;
+        const body = document.getElementById('mainBody');
+        const sidebar = document.getElementById('sidebarMenu');
+        const cards = document.querySelectorAll('.card-bg');
+        const inputs = document.querySelectorAll('.input-bg');
+
+        if(isDarkMode) {
+            body.className = "bg-slate-950 text-slate-100 min-h-screen font-sans transition duration-300";
+            sidebar.className = "w-full md:w-64 bg-slate-900 border-r border-slate-800 p-6 flex flex-col justify-between shadow-sm transition";
+            cards.forEach(c => c.className = c.className.replace('bg-white', 'bg-slate-900').replace('border-slate-200', 'border-slate-800'));
+            inputs.forEach(i => i.className = i.className.replace('bg-slate-50', 'bg-slate-800').replace('text-slate-800', 'text-white'));
+        } else {
+            body.className = "bg-slate-100 text-slate-800 min-h-screen font-sans transition duration-300";
+            sidebar.className = "w-full md:w-64 bg-white border-r border-slate-200 p-6 flex flex-col justify-between shadow-sm transition";
+            cards.forEach(c => c.className = c.className.replace('bg-slate-900', 'bg-white').replace('border-slate-800', 'border-slate-200'));
+            inputs.forEach(i => i.className = i.className.replace('bg-slate-800', 'bg-slate-50').replace('text-white', 'text-slate-800'));
+        }
+    }
+
+    function detectGPS() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    document.getElementById('location').value = `GPS: Lat ${pos.coords.latitude.toFixed(4)}, Lng ${pos.coords.longitude.toFixed(4)}`;
+                    showToast("GPS location detected!", "📍");
+                },
+                () => alert('Unable to retrieve location.')
+            );
+        } else alert('Geolocation not supported.');
+    }
+
+    async function fetchGrievances() {
+        try {
+            const response = await fetch(API_URL + '/all');
+            allGrievancesData = await response.json();
+
+            document.getElementById('stat-total').innerText = allGrievancesData.length;
+            document.getElementById('stat-progress').innerText = allGrievancesData.filter(g => g.status === 'SUBMITTED' || g.status === 'IN_PROGRESS').length;
+            document.getElementById('stat-resolved').innerText = allGrievancesData.filter(g => g.status === 'RESOLVED' || g.status === 'CLOSED').length;
+
+            filterFeed();
+            renderAdminTable(allGrievancesData);
+        } catch (err) { console.error(err); }
+    }
+
+    function filterFeed() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const cat = document.getElementById('filterCategory').value;
+        const filtered = allGrievancesData.filter(g => {
+            const matchQ = (g.description?.toLowerCase().includes(query)) || (g.location?.toLowerCase().includes(query));
+            const matchC = (cat === 'ALL' || g.category === cat);
+            return matchQ && matchC;
+        });
+
+        const container = document.getElementById('grievancesList');
+        if (filtered.length === 0) { container.innerHTML = '<p class="text-sm text-slate-500">No reports found.</p>'; return; }
+        container.innerHTML = filtered.map(g => `
+                <div class="border border-slate-200 p-4 rounded-2xl bg-white card-bg shadow-sm text-xs">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded">${g.category}</span>
+                        <span class="bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded">${g.status}</span>
+                    </div>
+                    <p class="font-medium text-slate-800 mt-2">${g.description}</p>
+                    <p class="text-slate-500 mt-1">📍 <a href="https://maps.google.com/?q=${encodeURIComponent(g.location)}" target="_blank" class="text-blue-600 underline">${g.location}</a></p>
+                    ${g.photoUrl ? `<div class="mt-2"><a href="${g.photoUrl}" target="_blank" class="text-blue-600 font-semibold underline">📷 View Attachment</a></div>` : ''}
+                    <div class="mt-2.5 pt-2 border-t border-slate-100 flex justify-between text-slate-400">
+                        <span>👤 ${g.userName || 'N/A'}</span>
+                        <span class="font-mono text-blue-600 font-bold">ID: ${g.grievid}</span>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    function renderAdminTable(data) {
+        const table = document.getElementById('adminTableBody');
+        if(data.length === 0) { table.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">No records found.</td></tr>'; return; }
+        table.innerHTML = data.map(g => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition">
+                    <td class="p-3 font-mono text-xs font-bold text-blue-600">${g.grievid}</td>
+                    <td class="p-3 font-medium">${g.userName || 'N/A'}</td>
+                    <td class="p-3">${g.category}</td>
+                    <td class="p-3"><span class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-700">${g.priority || 'MEDIUM'}</span></td>
+                    <td class="p-3">${g.location}</td>
+                    <td class="p-3"><span class="bg-amber-50 text-amber-700 border border-amber-100 text-xs px-2.5 py-1 rounded-lg font-semibold">${g.status}</span></td>
+                    <td class="p-3 flex gap-2 items-center">
+                        <select id="status-${g.grievid}" class="bg-slate-50 border border-slate-200 p-1.5 rounded-lg text-xs font-medium">
+                            <option value="SUBMITTED" ${g.status === 'SUBMITTED' ? 'selected' : ''}>SUBMITTED</option>
+                            <option value="IN_PROGRESS" ${g.status === 'IN_PROGRESS' ? 'selected' : ''}>IN_PROGRESS</option>
+                            <option value="RESOLVED" ${g.status === 'RESOLVED' ? 'selected' : ''}>RESOLVED</option>
+                            <option value="CLOSED" ${g.status === 'CLOSED' ? 'selected' : ''}>CLOSED</option>
+                        </select>
+                        <button onclick="updateStatus('${g.grievid}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-sm transition">Update</button>
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    function renderMyReports() {
+        const container = document.getElementById('myReportsList');
+        if(mySessionReports.length === 0) { container.innerHTML = '<p class="text-sm text-slate-500">No reports filed in this session yet.</p>'; return; }
+        container.innerHTML = mySessionReports.map(r => `
+                <div class="border border-slate-200 p-4 rounded-xl bg-slate-50 flex justify-between items-center text-xs">
+                    <div>
+                        <p class="font-bold text-slate-900">${r.category} - <span class="text-blue-600 font-mono">${r.grievid}</span></p>
+                        <p class="text-slate-600 mt-1">${r.description}</p>
+                    </div>
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold rounded">${r.status || 'SUBMITTED'}</span>
+                </div>
+            `).join('');
+    }
+
+    function exportToCSV() {
+        if(allGrievancesData.length === 0) { alert('No data'); return; }
+        let csv = 'ID,Name,Contact,Category,Priority,Location,Status\n';
+        allGrievancesData.forEach(g => { csv += `"${g.grievid}","${g.userName}","${g.userContact}","${g.category}","${g.priority}","${g.location}","${g.status}"\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'reports.csv'; a.click();
+    }
+
+    async function updateStatus(id) {
+        const newStatus = document.getElementById(`status-${id}`).value;
+        const res = await fetch(`${API_URL}/update-status/${id}?status=${newStatus}`, { method: 'PUT' });
+        if(res.ok) { showToast(`Status updated to ${newStatus}`, "✅"); fetchGrievances(); }
+    }
+
+    async function submitGrievance(e) {
+        e.preventDefault();
+        const photoInput = document.getElementById('photoFile');
+        let photoUrl = photoInput.files[0] ? URL.createObjectURL(photoInput.files[0]) : "";
+
+        const payload = {
+            userName: document.getElementById('userName').value,
+            userContact: document.getElementById('userContact').value,
+            category: document.getElementById('category').value,
+            priority: document.getElementById('priority').value,
+            location: document.getElementById('location').value,
+            description: document.getElementById('description').value,
+            photoUrl: photoUrl
+        };
+
+        const res = await fetch(API_URL + '/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if(res.ok) {
+            const saved = await res.json();
+            mySessionReports.push(saved);
+            localStorage.setItem('myGrievances', JSON.stringify(mySessionReports));
+            showToast("Report submitted successfully!", "✅");
+            alert("Tracking ID: " + saved.grievid);
+            document.getElementById('grievanceForm').reset();
+            switchSection('feed');
+        }
+    }
+
+    async function trackComplaint() {
+        const id = document.getElementById('trackIdInput').value.trim();
+        const resDiv = document.getElementById('trackResult');
+        if(!id) return;
+        const res = await fetch(`${API_URL}/track/${id}`);
+        if(res.ok) {
+            const g = await res.json();
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `<p><strong>Status:</strong> <span class="text-blue-600 font-bold">${g.status}</span></p><p><strong>Category:</strong> ${g.category}</p><p><strong>Location:</strong> ${g.location}</p><p><strong>Description:</strong> ${g.description}</p>`;
+        }
+    }
+</script>
+</body>
+</html>
