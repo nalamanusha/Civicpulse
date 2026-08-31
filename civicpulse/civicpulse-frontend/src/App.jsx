@@ -34,8 +34,9 @@ export default function App() {
       try { return JSON.parse(saved); } catch (e) { /* ignore */ }
     }
     return [
-      { id: 'APP-2024-1247', type: 'Birth Certificate', applicant: 'Priya Sharma', child: 'Aarav', status: 'Approved', issuedDate: new Date().toISOString().split('T')[0] },
-      { id: 'APP-2024-1248', type: 'Income Certificate', applicant: 'Rajesh Kumar', child: 'Self', status: 'Pending Verification', issuedDate: '-' }
+      { id: 'APP-2024-5421', type: 'birth', applicant: 'Nalam Sri Lakshmi Gayathri Anusha', child: 'Nanaji', mobile: '9876543210', aadhar: '1234 5678 9012', status: 'Approved', issuedDate: '2026-08-31' },
+      { id: 'APP-2024-1247', type: 'Birth Certificate', applicant: 'Priya Sharma', child: 'Aarav', mobile: '9123456789', aadhar: '9876 5432 1012', status: 'Approved', issuedDate: '2026-06-15' },
+      { id: 'APP-2024-1248', type: 'Income Certificate', applicant: 'Rajesh Kumar', child: 'Self', mobile: '9988776655', aadhar: '4567 8901 2345', status: 'Pending Verification', issuedDate: '-' }
     ];
   });
 
@@ -148,6 +149,29 @@ export default function App() {
     const currentDate = new Date().toISOString().split('T')[0];
     setCertificates(certificates.map(c => c.id === id ? { ...c, status: 'Approved', issuedDate: currentDate } : c));
     showToast(`Certificate ${id} approved successfully!`);
+  };
+
+  const handleDownloadCert = (cert) => {
+    showToast(`Downloading certificate ${cert.id}...`);
+    const element = document.createElement("a");
+    const file = new Blob([
+      `=== SMART GOVERNANCE PORTAL ===\n` +
+      `OFFICIAL DIGITAL CERTIFICATE\n\n` +
+      `Application ID: ${cert.id}\n` +
+      `Certificate Type: ${cert.type}\n` +
+      `Applicant Name: ${cert.applicant}\n` +
+      `Beneficiary Name: ${cert.child}\n` +
+      `Mobile Number: ${cert.mobile || 'N/A'}\n` +
+      `Aadhar Number: ${cert.aadhar || 'N/A'}\n` +
+      `Status: APPROVED\n` +
+      `Issued Date: ${cert.issuedDate}\n\n` +
+      `[Digitally Signed and Verified by Smart Governance Portal]`
+    ], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `${cert.id}_Certificate.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   const filteredGrievances = grievances.filter(item => {
@@ -270,41 +294,42 @@ export default function App() {
             </div>
         )}
 
-        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
+        {/* Professional Royal Blue Sidebar Theme */}
+        <aside className="w-64 bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 border-r border-blue-800/40 flex flex-col justify-between text-slate-100 shadow-2xl">
           <div>
-            <div className="p-4 font-bold text-sm border-b border-gray-200 flex items-center gap-2 text-blue-600 leading-tight">
-              <Shield className="h-6 w-6 shrink-0" /> Smart Governance Portal
+            <div className="p-4 font-bold text-sm border-b border-blue-800/50 flex items-center gap-2 text-white leading-tight bg-blue-950/80 backdrop-blur">
+              <Shield className="h-6 w-6 shrink-0 text-cyan-400" /> Smart Governance Portal
             </div>
             <nav className="p-4 space-y-2">
-              <button onClick={() => setActiveTab('feed')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'feed' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('feed')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'feed' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <Home size={18} /> Live Feed
               </button>
-              <button onClick={() => setActiveTab('file')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'file' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('file')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'file' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <FileText size={18} /> File Grievance
               </button>
-              <button onClick={() => setActiveTab('certificates')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'certificates' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('certificates')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'certificates' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <FileCheck size={18} /> Certs & Permits
               </button>
-              <button onClick={() => setActiveTab('track')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'track' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('track')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'track' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <Navigation size={18} /> Track Grievance
               </button>
-              <button onClick={() => setActiveTab('schemes')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'schemes' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('schemes')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'schemes' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <Award size={18} /> Welfare Schemes
               </button>
-              <button onClick={() => setActiveTab('analytics')} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm cursor-pointer ${activeTab === 'analytics' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}>
+              <button onClick={() => setActiveTab('analytics')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm cursor-pointer transition ${activeTab === 'analytics' ? 'bg-cyan-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'}`}>
                 <BarChart3 size={18} /> Governance Analytics
               </button>
             </nav>
           </div>
 
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
-            <div className="text-xs text-gray-500 font-semibold uppercase">Current Role</div>
-            <div className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-1">
-              <User size={14} /> {role}
+          <div className="p-4 border-t border-blue-800/50 bg-blue-950/90">
+            <div className="text-xs text-blue-300 font-semibold uppercase tracking-wider">Current Role</div>
+            <div className="text-sm font-bold text-white flex items-center gap-1.5 mt-1">
+              <User size={14} className="text-cyan-400" /> {role}
             </div>
             <button
                 onClick={() => setIsAuthenticated(false)}
-                className="mt-3 w-full bg-red-50 text-red-600 hover:bg-red-100 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
+                className="mt-3 w-full bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <LogOut size={14} /> Logout
             </button>
@@ -484,6 +509,8 @@ export default function App() {
                           type: e.target.certType.value,
                           applicant: e.target.applicantName.value,
                           child: e.target.childName.value,
+                          mobile: e.target.mobileNumber.value,
+                          aadhar: e.target.aadharNumber.value,
                           status: 'Pending Verification',
                           issuedDate: '-'
                         };
@@ -491,12 +518,14 @@ export default function App() {
                         showToast("Certificate application submitted successfully!");
                         e.target.reset();
                       }} className="space-y-3">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          <input name="certType" type="text" required placeholder="Certificate Type (e.g. Birth/Income)" className="border p-2 rounded text-sm bg-gray-50" />
-                          <input name="applicantName" type="text" required placeholder="Applicant Full Name" className="border p-2 rounded text-sm bg-gray-50" />
-                          <input name="childName" type="text" required placeholder="Beneficiary / Child Name" className="border p-2 rounded text-sm bg-gray-50" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          <input name="certType" type="text" required placeholder="Certificate Type (e.g. Birth/Income)" className="border p-2.5 rounded-lg text-sm bg-gray-50" />
+                          <input name="applicantName" type="text" required placeholder="Applicant Full Name" className="border p-2.5 rounded-lg text-sm bg-gray-50" />
+                          <input name="childName" type="text" required placeholder="Beneficiary / Child Name" className="border p-2.5 rounded-lg text-sm bg-gray-50" />
+                          <input name="mobileNumber" type="tel" maxLength="10" required placeholder="Mobile Number (10 digits)" className="border p-2.5 rounded-lg text-sm bg-gray-50" />
+                          <input name="aadharNumber" type="text" maxLength="14" required placeholder="Aadhar Number (XXXX XXXX XXXX)" className="border p-2.5 rounded-lg text-sm bg-gray-50 md:col-span-2 lg:col-span-2" />
                         </div>
-                        <button type="submit" className="bg-blue-600 text-white text-xs px-4 py-2 rounded font-medium hover:bg-blue-700 transition cursor-pointer">
+                        <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition cursor-pointer text-sm">
                           Submit Application
                         </button>
                       </form>
@@ -516,6 +545,7 @@ export default function App() {
                     </span>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">Applicant: <span className="font-medium text-gray-800">{cert.applicant}</span> | Beneficiary: <span className="font-medium text-gray-800">{cert.child}</span></p>
+                        <p className="text-xs text-gray-500 mt-1">Mobile: <span className="font-medium text-gray-700">{cert.mobile || 'N/A'}</span> | Aadhar: <span className="font-medium text-gray-700">{cert.aadhar || 'N/A'}</span></p>
 
                         <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                           <span className="text-xs text-gray-500">Issued Date: {cert.issuedDate}</span>
@@ -528,9 +558,12 @@ export default function App() {
                               </button>
                           )}
                           {cert.status === 'Approved' && (
-                              <span className="text-xs text-green-700 font-semibold flex items-center gap-1">
-                        <CheckCircle size={14} /> Digital Signed & Downloadable
-                      </span>
+                              <button
+                                  onClick={() => handleDownloadCert(cert)}
+                                  className="text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-3.5 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                              >
+                                <CheckCircle size={14} /> Download Certificate
+                              </button>
                           )}
                         </div>
                       </div>
@@ -625,7 +658,7 @@ export default function App() {
                               rel="noopener noreferrer"
                               className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-1 shadow-sm cursor-pointer"
                           >
-                            Visit Portal <ExternalLink size={12} />
+                            Visit Portal <ExternalLink size= {12} />
                           </a>
                         </div>
                       </div>
